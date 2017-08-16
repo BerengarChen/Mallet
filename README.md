@@ -1,7 +1,6 @@
 Learning the Latent "Look"
 ======
 
-## Usage
 This code provides an implementation of the research paper:
 ```
 Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding 
@@ -32,7 +31,7 @@ The documents for each language will be in its own file. The Nth document in lan
 ```
 docID language_name 
 ```
-An example corpus can be downloaded [here](mallet.cs.umass.edu/pltm.tar.gz).
+An example corpus can be downloaded [here](http://mallet.cs.umass.edu/pltm.tar.gz).
 
 2. Import documents for each language. The `token-regex` is the appropriate one to use with our attribute vocabulary.
 ```
