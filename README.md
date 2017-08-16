@@ -1,8 +1,18 @@
 Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding 
 ======
 
-This project is based on MALLET polylingual LDA implementation, with a few minor changes:
+## Usage
+This code provides an implementation of the research paper:
+```
+Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding 
+Wei-Lin Hsiao, Kristen Grauman
+International Conference on Computer Vision (ICCV), 2017
+```
+See our [project page](http://vision.cs.utexas.edu/projects/StyleEmbedding/) for more detail.
+
+This project is based on [MALLET](https://github.com/mimno/Mallet) polylingual LDA implementation, with a few minor changes:
 We smoothed the topic/word counts to topic/word probabilities.
+
 For stability, after convergence, we run 100 more samplings to average the learnt topic/word probabilities.
 
 
