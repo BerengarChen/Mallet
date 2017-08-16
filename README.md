@@ -1,4 +1,4 @@
-Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding 
+Learning the Latent "Look"
 ======
 
 ## Usage
@@ -10,9 +10,8 @@ International Conference on Computer Vision (ICCV), 2017
 ```
 See our [project page](http://vision.cs.utexas.edu/projects/StyleEmbedding/) for more detail.
 
-This project is based on [MALLET](https://github.com/mimno/Mallet) polylingual LDA implementation, with a few minor changes:
-We smoothed the topic/word counts to topic/word probabilities.
-
+This project is based on [MALLET](https://github.com/mimno/Mallet) polylingual LDA implementation, with a few minor changes:  
+We smoothed the topic/word counts to topic/word probabilities.  
 For stability, after convergence, we run 100 more samplings to average the learnt topic/word probabilities.
 
 
@@ -33,6 +32,8 @@ The documents for each language will be in its own file. The Nth document in lan
 ```
 docID language_name 
 ```
+An example corpus can be downloaded [here](mallet.cs.umass.edu/pltm.tar.gz).
+
 2. Import documents for each language. The `token-regex` is the appropriate one to use with our attribute vocabulary.
 ```
 bin/mallet import-file --input <document_filename> --output <sequence_filename> --keep-sequence --token-regex '[\p{L}\p{N}_<>/-]+|[\p{P}]+'
@@ -43,42 +44,5 @@ bin/mallet run cc.mallet.topics.PolylingualTopicModel --language-inputs <languag
 ```
 
 For details about the commands please visit the API documentation and website at: http://mallet.cs.umass.edu/
-
-
-## List of Algorithms:
-
-* Topic Modelling
-  * LDA
-  * Parallel LDA
-  * DMR LDA
-  * Hierarchical LDA
-  * Labeled LDA
-  * Polylingual Topic Model
-  * Hierarchical Pachinko Allocation Model (PAM)
-  * Weighted Topic Model
-  * LDA with integrated phrase discovery
-  * Word Embeddings (word2vec) using skip-gram with negative sampling
-* Classification
-  * AdaBoost
-  * Bagging
-  * Winnow
-  * C45 Decision Tree
-  * Ensemble Trainer
-  * Maximum Entropy Classifier (Multinomial Logistic Regression)
-  * Naive Bayes
-  * Rank Maximum Entropy Classifier
-  * Posterior Regularization Auxiliary Model
-* Clustering
-  * Greedy Agglomerative
-  * Hill Climbing
-  * K-Means
-  * K-Best
-* Sequence Prediction Models
-  * Conditional Random Fields
-  * Maximum Entropy Markov Models
-  * Hidden Markov Models
-  * Semi-Supervised Sequence Prediction Models
-* Linear Regression
-
 
 
