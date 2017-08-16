@@ -1,21 +1,10 @@
-Mallet
+Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding 
 ======
 
-Website: http://mallet.cs.umass.edu/index.php
+This project is based on MALLET polylingual LDA implementation, with a few minor changes:
+We smoothed the topic/word counts to topic/word probabilities.
+For stability, after convergence, we run 100 more samplings to average the learnt topic/word probabilities.
 
-MALLET is a Java-based package for statistical natural language processing, document classification, clustering, topic modeling, information extraction, and other machine learning applications to text.
-
-MALLET includes sophisticated tools for document classification: efficient routines for converting text to "features", a wide variety of algorithms (including Naïve Bayes, Maximum Entropy, and Decision Trees), and code for evaluating classifier performance using several commonly used metrics.
-
-In addition to classification, MALLET includes tools for sequence tagging for applications such as named-entity extraction from text. Algorithms include Hidden Markov Models, Maximum Entropy Markov Models, and Conditional Random Fields. These methods are implemented in an extensible system for finite state transducers.
-
-Topic models are useful for analyzing large collections of unlabeled text. The MALLET topic modeling toolkit contains efficient, sampling-based implementations of Latent Dirichlet Allocation, Pachinko Allocation, and Hierarchical LDA.
-
-Many of the algorithms in MALLET depend on numerical optimization. MALLET includes an efficient implementation of Limited Memory BFGS, among many other optimization methods.
-
-In addition to sophisticated Machine Learning applications, MALLET includes routines for transforming text documents into numerical representations that can then be processed efficiently. This process is implemented through a flexible system of "pipes", which handle distinct tasks such as tokenizing strings, removing stopwords, and converting sequences into count vectors.
-
-An add-on package to MALLET, called GRMM, contains support for inference in general graphical models, and training of CRFs with arbitrary graphical structure.
 
 ## Installation
 
@@ -24,18 +13,24 @@ To build a Mallet 2.0 development release, you must have the Apache ant build to
 
 If `ant` finishes with `"BUILD SUCCESSFUL"`, Mallet is now ready to use.
 
-If you would like to deploy Mallet as part of a larger application, it is helpful to create a single ".jar" file that contains all of the compiled code. Once you have compiled the individual Mallet class files, use the command:
-`ant jar`
-
-This process will create a file "mallet.jar" in the "dist" directory within Mallet.
-
 ## Usage
 
-Once you have installed Mallet you can use it using the following command:
+1. Prepare your documents. Every document is a single line in the file, every line is
 ```
-bin/mallet [command] --option value --option value ...
+docID language_name word_1 word_2 ...
 ```
-Type `bin/mallet` to get a list of commands, and use the option `--help` with any command to get a description of valid options.
+The documents for each language will be in its own file. The Nth document in language 1 is assumed to have the same topic distribution (though a different vocabulary) as the Nth document in language 2, and so on. An example corpus is here. If a language lacks Nth document, just leave if blank as
+```
+docID language_name 
+```
+2. Import documents for each language. The `token-regex` is the appropriate one to use with our attribute vocabulary.
+```
+bin/mallet import-file --input <document_filename> --output <sequence_filename> --keep-sequence --token-regex '[\p{L}\p{N}_<>/-]+|[\p{P}]+'
+```
+3. Train a model.
+```
+bin/mallet run cc.mallet.topics.PolylingualTopicModel --language-inputs <language1_sequence> <language2_sequence> ... <languageN_sequence> --alpha <alpha_val> --beta <beta_val> --num-topics <number_of_topics> --output-average-doc-topics <theta_save_to_filename> --output-average-topic-keys <topic_top_words_save_to_filename> --output-average-key-probs <phi_save_to_filename>
+```
 
 For details about the commands please visit the API documentation and website at: http://mallet.cs.umass.edu/
 

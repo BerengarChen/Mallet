@@ -25,82 +25,133 @@ import cc.mallet.util.Randoms;
 
 public class PolylingualTopicModel implements Serializable {
 
-	static CommandOption.SpacedStrings languageInputFiles = new CommandOption.SpacedStrings(PolylingualTopicModel.class, "language-inputs", "FILENAME [FILENAME ...]", true, null,
+	static CommandOption.SpacedStrings languageInputFiles = new CommandOption.SpacedStrings
+		(PolylingualTopicModel.class, "language-inputs", "FILENAME [FILENAME ...]", true, null,
 		  "Filenames for polylingual topic model. Each language should have its own file, " +
 		  "with the same number of instances in each file. If a document is missing in " + 
 		 "one language, there should be an empty instance.", null);
 
-	static CommandOption.String outputModelFilename = new CommandOption.String(PolylingualTopicModel.class, "output-model", "FILENAME", true, null,
+	static CommandOption.String outputModelFilename = new CommandOption.String
+		(PolylingualTopicModel.class, "output-model", "FILENAME", true, null,
 		  "The filename in which to write the binary topic model at the end of the iterations.  " +
 		 "By default this is null, indicating that no file will be written.", null);
 
-	static CommandOption.String inputModelFilename = new CommandOption.String(PolylingualTopicModel.class, "input-model", "FILENAME", true, null,
+	static CommandOption.String inputModelFilename = new CommandOption.String
+		(PolylingualTopicModel.class, "input-model", "FILENAME", true, null,
 		  "The filename from which to read the binary topic model to which the --input will be appended, " +
 		  "allowing incremental training.  " +
 		 "By default this is null, indicating that no file will be read.", null);
 
-	static CommandOption.String inferencerFilename = new CommandOption.String(PolylingualTopicModel.class, "inferencer-filename", "FILENAME", true, null,
+	static CommandOption.String inferencerFilename = new CommandOption.String
+		(PolylingualTopicModel.class, "inferencer-filename", "FILENAME", true, null,
 		  "A topic inferencer applies a previously trained topic model to new documents.  " +
 		 "By default this is null, indicating that no file will be written.", null);
 
-	static CommandOption.String evaluatorFilename = new CommandOption.String(PolylingualTopicModel.class, "evaluator-filename", "FILENAME", true, null,
+	static CommandOption.String evaluatorFilename = new CommandOption.String
+		(PolylingualTopicModel.class, "evaluator-filename", "FILENAME", true, null,
 		  "A held-out likelihood evaluator for new documents.  " +
 		 "By default this is null, indicating that no file will be written.", null);
 
-	static CommandOption.String stateFile = new CommandOption.String(PolylingualTopicModel.class, "output-state", "FILENAME", true, null,
+	static CommandOption.String stateFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-state", "FILENAME", true, null,
 		  "The filename in which to write the Gibbs sampling state after at the end of the iterations.  " +
 		 "By default this is null, indicating that no file will be written.", null);
 
-	static CommandOption.String topicKeysFile = new CommandOption.String(PolylingualTopicModel.class, "output-topic-keys", "FILENAME", true, null,
+	static CommandOption.String topicKeysFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-topic-keys", "FILENAME", true, null,
 		  "The filename in which to write the top words for each topic and any Dirichlet parameters.  " +
 		 "By default this is null, indicating that no file will be written.", null);
 
-	static CommandOption.String docTopicsFile = new CommandOption.String(PolylingualTopicModel.class, "output-doc-topics", "FILENAME", true, null,
+	static CommandOption.String averageTopicKeysFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-average-topic-keys", "FILENAME", true, null,
+		  "The filename in which to write the top words for each topic and any Dirichlet parameters.  " +
+		 "By default this is null, indicating that no file will be written.", null);
+
+	static CommandOption.String topicKeyProbsFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-key-probs", "FILENAME", true, null,
+		  "The filename in which to write the word probabilities for each topic and any Dirichlet parameters.  " +
+		 "By default this is null, indicating that no file will be written.", null);
+
+	static CommandOption.String averageTopicKeyProbsFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-average-key-probs", "FILENAME", true, null,
+		  "The filename in which to write the word probabilities for each topic and any Dirichlet parameters.  " +
+		 "By default this is null, indicating that no file will be written.", null);
+
+	static CommandOption.String topicGlobalKeyProbsFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-global-key-probs", "FILENAME", true, null,
+		  "The filename in which to write the GLOBAL word probabilities for each topic and any Dirichlet parameters.  " +
+		 "By default this is null, indicating that no file will be written.", null);
+
+	static CommandOption.String averageTopicGlobalKeyProbsFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-average-global-key-probs", "FILENAME", true, null,
+		  "The filename in which to write the GLOBAL word probabilities for each topic and any Dirichlet parameters.  " +
+		 "By default this is null, indicating that no file will be written.", null);
+
+	static CommandOption.String docTopicsFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-doc-topics", "FILENAME", true, null,
 		  "The filename in which to write the topic proportions per document, at the end of the iterations.  " +
 		 "By default this is null, indicating that no file will be written.", null);
 
-	static CommandOption.Double docTopicsThreshold = new CommandOption.Double(PolylingualTopicModel.class, "doc-topics-threshold", "DECIMAL", true, 0.0,
+	static CommandOption.String averageDocTopicsFile = new CommandOption.String
+		(PolylingualTopicModel.class, "output-average-doc-topics", "FILENAME", true, null,
+		  "The filename in which to write the topic proportions per document, at the end of the iterations.  " +
+		 "By default this is null, indicating that no file will be written.", null);
+
+	static CommandOption.Double docTopicsThreshold = new CommandOption.Double
+		(PolylingualTopicModel.class, "doc-topics-threshold", "DECIMAL", true, 0.0,
 		  "When writing topic proportions per document with --output-doc-topics, " +
 		 "do not print topics with proportions less than this threshold value.", null);
 
-	static CommandOption.Integer docTopicsMax = new CommandOption.Integer(PolylingualTopicModel.class, "doc-topics-max", "INTEGER", true, -1,
+	static CommandOption.Integer docTopicsMax = new CommandOption.Integer
+		(PolylingualTopicModel.class, "doc-topics-max", "INTEGER", true, -1,
 		  "When writing topic proportions per document with --output-doc-topics, " +
 		  "do not print more than INTEGER number of topics.  "+
 		 "A negative value indicates that all topics should be printed.", null);
 
-	static CommandOption.Integer outputModelIntervalOption = new CommandOption.Integer(PolylingualTopicModel.class, "output-model-interval", "INTEGER", true, 0,
+	static CommandOption.Integer outputModelIntervalOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "output-model-interval", "INTEGER", true, 0,
 		  "The number of iterations between writing the model (and its Gibbs sampling state) to a binary file.  " +
 		 "You must also set the --output-model to use this option, whose argument will be the prefix of the filenames.", null);
 
-	static CommandOption.Integer outputStateIntervalOption = new CommandOption.Integer(PolylingualTopicModel.class, "output-state-interval", "INTEGER", true, 0,
+	static CommandOption.Integer outputStateIntervalOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "output-state-interval", "INTEGER", true, 0,
 		  "The number of iterations between writing the sampling state to a text file.  " +
 		 "You must also set the --output-state to use this option, whose argument will be the prefix of the filenames.", null);
 
-	static CommandOption.Integer numTopicsOption = new CommandOption.Integer(PolylingualTopicModel.class, "num-topics", "INTEGER", true, 10,
+	static CommandOption.Integer numTopicsOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "num-topics", "INTEGER", true, 10,
 		 "The number of topics to fit.", null);
 
-	static CommandOption.Integer numIterationsOption = new CommandOption.Integer(PolylingualTopicModel.class, "num-iterations", "INTEGER", true, 1000,
+	static CommandOption.Integer numIterationsOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "num-iterations", "INTEGER", true, 1000,
 		 "The number of iterations of Gibbs sampling.", null);
 
-	static CommandOption.Integer randomSeedOption = new CommandOption.Integer(PolylingualTopicModel.class, "random-seed", "INTEGER", true, 0,
+	static CommandOption.Integer randomSeedOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "random-seed", "INTEGER", true, 0,
 		 "The random seed for the Gibbs sampler.  Default is 0, which will use the clock.", null);
 
-	static CommandOption.Integer topWordsOption = new CommandOption.Integer(PolylingualTopicModel.class, "num-top-words", "INTEGER", true, 20,
+	static CommandOption.Integer topWordsOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "num-top-words", "INTEGER", true, 20,
 		 "The number of most probable words to print for each topic after model estimation.", null);
 
-	static CommandOption.Integer showTopicsIntervalOption = new CommandOption.Integer(PolylingualTopicModel.class, "show-topics-interval", "INTEGER", true, 50,
+	static CommandOption.Integer showTopicsIntervalOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "show-topics-interval", "INTEGER", true, 50,
 		 "The number of iterations between printing a brief summary of the topics so far.", null);
 
-	static CommandOption.Integer optimizeIntervalOption = new CommandOption.Integer(PolylingualTopicModel.class, "optimize-interval", "INTEGER", true, 0,
+	static CommandOption.Integer optimizeIntervalOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "optimize-interval", "INTEGER", true, 0,
 		 "The number of iterations between reestimating dirichlet hyperparameters.", null);
 
-	static CommandOption.Integer optimizeBurnInOption = new CommandOption.Integer(PolylingualTopicModel.class, "optimize-burn-in", "INTEGER", true, 200,
+	static CommandOption.Integer optimizeBurnInOption = new CommandOption.Integer
+		(PolylingualTopicModel.class, "optimize-burn-in", "INTEGER", true, 200,
 		 "The number of iterations to run before first estimating dirichlet hyperparameters.", null);
 
-	static CommandOption.Double alphaOption = new CommandOption.Double(PolylingualTopicModel.class, "alpha", "DECIMAL", true, 50.0,
+	static CommandOption.Double alphaOption = new CommandOption.Double
+		(PolylingualTopicModel.class, "alpha", "DECIMAL", true, 50.0,
 		 "Alpha parameter: smoothing over topic distribution.",null);
 
-	static CommandOption.Double betaOption = new CommandOption.Double(PolylingualTopicModel.class, "beta", "DECIMAL", true, 0.01,
+	static CommandOption.Double betaOption = new CommandOption.Double
+		(PolylingualTopicModel.class, "beta", "DECIMAL", true, 0.01,
 		 "Beta parameter: smoothing over unigram distribution.",null);
 	
 	public class TopicAssignment implements Serializable {
@@ -140,7 +191,8 @@ public class PolylingualTopicModel implements Serializable {
 
 	protected int[] languageMaxTypeCounts;
 
-	public static final double DEFAULT_BETA = 0.01;
+	//public static final double DEFAULT_BETA = 0.01;
+	protected double DEFAULT_BETA = 0.01;
 	
 	protected double[] languageSmoothingOnlyMasses;
 	protected double[][] languageCachedCoefficients;
@@ -155,6 +207,10 @@ public class PolylingualTopicModel implements Serializable {
 
 	protected int[][][] languageTypeTopicCounts; // indexed by <feature index, topic index>
 	protected int[][] languageTokensPerTopic; // indexed by <topic index>
+
+	// Arrays to take average of word-counts, topic counts after the model converges
+	protected double[][] averageDocumentTopicCounts;
+	List<List<List<Float>>> averageLanguageTopicWordCount = new ArrayList<List<List<Float>>>();
 
 	// for dirichlet estimation
 	protected int[] docLengthCounts; // histogram of document sizes, summed over languages
@@ -182,6 +238,10 @@ public class PolylingualTopicModel implements Serializable {
 		this (numberOfTopics, numberOfTopics);
 	}
 	
+	public PolylingualTopicModel (int numberOfTopics, double alphaSum, double betaSum) {
+		this (numberOfTopics, alphaSum, betaSum, new Randoms());
+	}
+
 	public PolylingualTopicModel (int numberOfTopics, double alphaSum) {
 		this (numberOfTopics, alphaSum, new Randoms());
 	}
@@ -196,7 +256,44 @@ public class PolylingualTopicModel implements Serializable {
 	public PolylingualTopicModel (int numberOfTopics, double alphaSum, Randoms random) {
 		this (newLabelAlphabet (numberOfTopics), alphaSum, random);
 	}
+
+	public PolylingualTopicModel (int numberOfTopics, double alphaSum, double betaSum, Randoms random) {
+		this (newLabelAlphabet (numberOfTopics), alphaSum, betaSum, random);
+	}
 	
+	public PolylingualTopicModel (LabelAlphabet topicAlphabet, double alphaSum, double betaSum, Randoms random)
+	{
+		this.data = new ArrayList<TopicAssignment>();
+		this.topicAlphabet = topicAlphabet;
+		this.numTopics = topicAlphabet.size();
+		if (betaSum > 0) {
+			this.DEFAULT_BETA = betaSum;
+		}
+
+		if (Integer.bitCount(numTopics) == 1) {
+			// exact power of 2
+			topicMask = numTopics - 1;
+			topicBits = Integer.bitCount(topicMask);
+		}
+		else {
+			// otherwise add an extra bit
+			topicMask = Integer.highestOneBit(numTopics) * 2 - 1;
+			topicBits = Integer.bitCount(topicMask);
+		}
+
+
+		this.alphaSum = alphaSum;
+		this.alpha = new double[numTopics];
+		Arrays.fill(alpha, alphaSum / numTopics);
+		this.random = random;
+		
+		formatter = NumberFormat.getInstance();
+		formatter.setMaximumFractionDigits(5);
+
+		System.err.println("Polylingual LDA: " + numTopics + " topics, " + topicBits + " topic bits, " + 
+						   Integer.toBinaryString(topicMask) + " topic mask");
+	}
+
 	public PolylingualTopicModel (LabelAlphabet topicAlphabet, double alphaSum, Randoms random)
 	{
 		this.data = new ArrayList<TopicAssignment>();
@@ -517,6 +614,29 @@ public class PolylingualTopicModel implements Serializable {
 		Arrays.fill(docLengthCounts, 0);
 		for (int topic = 0; topic < topicDocCounts.length; topic++)
 			Arrays.fill(topicDocCounts[topic], 0);
+	}
+
+	public void average_estimate () throws IOException {
+		averageDocumentTopicCounts = new double[data.size()][numTopics];
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		List<List<Float>> newArr = new ArrayList<List<Float>>();
+    		for (int language = 0; language < numLanguages; language++) {
+    			List<Float> innerNewArr = new ArrayList<Float>();
+    			for (int i = 0; i < vocabularySizes[language]; i++) {
+    				innerNewArr.add((float)0);
+    			}
+    			newArr.add(innerNewArr);
+    			// System.out.print("vocabilarysize: "+vocabularySizes[language]);	
+    			// System.out.println(" innerArr size: "+innerNewArr.size());	
+    		}   
+    		averageLanguageTopicWordCount.add(newArr);
+    		// System.out.println("outerArr size: "+newArr.size());	
+    	}
+		for (int i = 0; i < 100; i++) {
+			estimate(1);
+			calculateWordProbs();
+			calculateDocumentTopics();
+		}
 	}
 
 	public void estimate () throws IOException {
@@ -1106,6 +1226,384 @@ public class PolylingualTopicModel implements Serializable {
         }
     }
 
+    public void printAverageTopWords (File file, int numWords, boolean useNewLines) throws IOException {
+		PrintStream out = new PrintStream (file);
+		printAverageTopWords(out, numWords, useNewLines);
+		out.close();
+	}
+	
+    public void printAverageTopWords (PrintStream out, int numWords, boolean usingNewLines) {
+		
+		TreeSet[][] topicLanguageSortedWords = new TreeSet[numTopics][numLanguages];
+		for (int topic = 0; topic < numTopics; topic++) {
+			TreeSet[] languageSortedWords = topicLanguageSortedWords[topic];
+    		for (int language = 0; language < numLanguages; language++) {
+    			languageSortedWords[language] = new TreeSet<IDSorter>();
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				languageSortedWords[language].add(new IDSorter(type, (double)averageLanguageTopicWordCount.get(topic).get(language).get(type)));
+    			}
+    		}
+    	}
+
+        for (int topic = 0; topic < numTopics; topic++) {
+
+			out.println (topic + "\t" + formatter.format(alpha[topic]));
+				
+			for (int language = 0; language < numLanguages; language++) {
+				
+				out.print(" " + language + "\t" + languageTokensPerTopic[language][topic] + "\t" + betas[language] + "\t");
+
+				TreeSet<IDSorter> sortedWords = topicLanguageSortedWords[topic][language];
+				Alphabet alphabet = alphabets[language];
+
+				int word = 1;
+				Iterator<IDSorter> iterator = sortedWords.iterator();
+				while (iterator.hasNext() && word < numWords) {
+					IDSorter info = iterator.next();
+					
+					out.print(alphabet.lookupObject(info.getID()) + " ");
+					word++;
+				}
+				
+				out.println();
+            }
+        }
+    }
+
+    public void printWordProbs (File file, File file_global, boolean useNewLines) throws IOException {
+		PrintStream out = new PrintStream (file);
+		if (file_global != null) {
+			PrintStream out_global = new PrintStream (file_global);
+			printWordProbs(out, out_global, useNewLines);
+			out_global.close();
+
+		} else {
+			printWordProbs(out, useNewLines);
+		}
+		out.close();
+		
+	}
+	
+    public void printWordProbs (PrintStream out, PrintStream out_global, boolean usingNewLines) {
+    	 List<List<List<Float>>> languageTopicWordCount = new ArrayList<List<List<Float>>>();
+    	 float [][] languageTopicTotalWords = new float[numTopics][numLanguages];
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		List<List<Float>> newArr = new ArrayList<List<Float>>();
+    		for (int language = 0; language < numLanguages; language++) {
+    			List<Float> innerNewArr = new ArrayList<Float>();
+    			for (int i = 0; i < vocabularySizes[language]; i++) {
+    				innerNewArr.add((float)0);
+    			}
+    			newArr.add(innerNewArr);
+    			// System.out.print("vocabilarysize: "+vocabularySizes[language]);	
+    			// System.out.println(" innerArr size: "+innerNewArr.size());	
+    		}   		
+    		languageTopicWordCount.add(newArr);
+    		// System.out.println("outerArr size: "+newArr.size());	
+    	}
+
+    	//// Compute word probabilities for each topic in each language ////
+    	for (int language = 0; language < numLanguages; language++) {
+    		int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    		double beta = betas[language];
+    		// System.out.println("beta: "+beta);
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			int[] topicCounts = typeTopicCounts[type];
+				
+				int index = 0;
+				while (index < topicCounts.length &&
+					   topicCounts[index] > 0) {
+					
+					int topic = topicCounts[index] & topicMask;
+					int count = topicCounts[index] >> topicBits;
+					// System.out.println("topic: "+topic+" count: "+count+" type: "+type);				
+					// ((languageTopicWordCount.get(topic)).get(language)).set(type) = (float)count/vocabularySizes[language]+beta;
+					// System.out.println((float)count/vocabularySizes[language]+(float)beta);
+					((languageTopicWordCount.get(topic)).get(language)).set(type,(float)count);
+					// System.out.println(((languageTopicWordCount.get(topic)).get(language)).get(type));
+
+					index++;
+				}
+    		}
+    	}
+
+    	//// Compute the total (smoothed) word count for each topic in each language////
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			float totalWordCount = 0;
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				totalWordCount+=(languageTopicWordCount.get(topic).get(language).get(type)+beta); 			
+    			}
+    			languageTopicTotalWords[topic][language] = totalWordCount;
+    		}
+    	}
+
+
+    	//// Print out the computed word probabilities for outer, upper, lower, hosiery in one file, and global in the other////
+    	for (int language = 0; language < numLanguages-1; language++) {
+    		Alphabet alphabet = alphabets[language];
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			out.print(alphabet.lookupObject(type) + " ");
+    		}
+    	}
+    	int global_language = numLanguages-1;
+    	Alphabet alphabet = alphabets[global_language];
+		for (int type = 0; type < vocabularySizes[global_language]; type++) {
+			out_global.print(alphabet.lookupObject(type) + " ");
+		}
+    	out.print("\n");
+    	out_global.print("\n");
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages-1; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				out.print(((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]) + " "); 
+    				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language] + "result: " + ((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]));
+    				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+    			}
+    		}
+    		int[][] typeTopicCounts = languageTypeTopicCounts[global_language];
+			double beta = betas[global_language];
+			for (int type = 0; type < vocabularySizes[global_language]; type++) {
+				out_global.print(((languageTopicWordCount.get(topic).get(global_language).get(type)+beta)/languageTopicTotalWords[topic][global_language]) + " "); 
+				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language]);
+				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+			}
+    		out.print("\n");
+    		out_global.print("\n");
+    	}
+    }
+
+    public void printWordProbs (PrintStream out, boolean usingNewLines) {
+    	List<List<List<Float>>> languageTopicWordCount = new ArrayList<List<List<Float>>>();
+    	float [][] languageTopicTotalWords = new float[numTopics][numLanguages];
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		List<List<Float>> newArr = new ArrayList<List<Float>>();
+    		for (int language = 0; language < numLanguages; language++) {
+    			List<Float> innerNewArr = new ArrayList<Float>();
+    			for (int i = 0; i < vocabularySizes[language]; i++) {
+    				innerNewArr.add((float)0);
+    			}
+    			newArr.add(innerNewArr);
+    			// System.out.print("vocabilarysize: "+vocabularySizes[language]);	
+    			// System.out.println(" innerArr size: "+innerNewArr.size());	
+    		}   		
+    		languageTopicWordCount.add(newArr);
+    		// System.out.println("outerArr size: "+newArr.size());	
+    	}
+
+    	//// Compute word probabilities for each topic in each language ////
+    	for (int language = 0; language < numLanguages; language++) {
+    		int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    		double beta = betas[language];
+    		// System.out.println("beta: "+beta);
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			int[] topicCounts = typeTopicCounts[type];
+				
+				int index = 0;
+				while (index < topicCounts.length &&
+					   topicCounts[index] > 0) {
+					
+					int topic = topicCounts[index] & topicMask;
+					int count = topicCounts[index] >> topicBits;
+					// System.out.println("topic: "+topic+" count: "+count+" type: "+type);				
+					// ((languageTopicWordCount.get(topic)).get(language)).set(type) = (float)count/vocabularySizes[language]+beta;
+					// System.out.println((float)count/vocabularySizes[language]+(float)beta);
+					((languageTopicWordCount.get(topic)).get(language)).set(type,(float)count);
+					// System.out.println(((languageTopicWordCount.get(topic)).get(language)).get(type));
+
+					index++;
+				}
+    		}
+    	}
+
+    	//// Compute the total (smoothed) word count for each topic in each language////
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			float totalWordCount = 0;
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				totalWordCount+=(languageTopicWordCount.get(topic).get(language).get(type)+beta); 			
+    			}
+    			languageTopicTotalWords[topic][language] = totalWordCount;
+    		}
+    	}
+
+
+    	//// Print out the computed word probabilities for ONLY outer, upper, lower, hosiery in one file////
+    	for (int language = 0; language < numLanguages-1; language++) {
+    		Alphabet alphabet = alphabets[language];
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			out.print(alphabet.lookupObject(type) + " ");
+    		}
+    	}
+    	out.print("\n");
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages-1; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				out.print(((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]) + " "); 
+    				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language]);
+    				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+    			}
+    		}
+    		out.print("\n");
+    	}
+    }
+
+    public void printAverageWordProbs (File file, File file_global, boolean useNewLines) throws IOException {	
+
+		PrintStream out = new PrintStream (file);
+		if (file_global != null) {
+			PrintStream out_global = new PrintStream (file_global);
+			printAverageWordProbs(out, out_global, useNewLines);
+			out_global.close();
+
+		} else {
+			printAverageWordProbs(out, useNewLines);
+		}
+		out.close();	
+	}
+
+    public void printAverageWordProbs (PrintStream out,  boolean usingNewLines) {
+    	//// Print out the computed word probabilities for ONLY outer, upper, lower, hosiery in one file////
+    	for (int language = 0; language < numLanguages; language++) {
+    		Alphabet alphabet = alphabets[language];
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			out.print(alphabet.lookupObject(type) + " ");
+    		}
+    	}
+    	out.print("\n");
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				out.print((averageLanguageTopicWordCount.get(topic).get(language).get(type)/100) + " "); 
+    				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language]);
+    				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+    			}
+    		}
+    		out.print("\n");
+    	}
+    }
+
+    public void printAverageWordProbs (PrintStream out, PrintStream out_global, boolean usingNewLines) {
+    	//// Print out the computed word probabilities for ONLY outer, upper, lower, hosiery in one file////
+    	for (int language = 0; language < numLanguages-1; language++) {
+    		Alphabet alphabet = alphabets[language];
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			out.print(alphabet.lookupObject(type) + " ");
+    		}
+    	}
+    	int global_language = numLanguages-1;
+    	Alphabet alphabet = alphabets[global_language];
+		for (int type = 0; type < vocabularySizes[global_language]; type++) {
+			out_global.print(alphabet.lookupObject(type) + " ");
+		}
+    	out.print("\n");
+    	out_global.print("\n");
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages-1; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				out.print((averageLanguageTopicWordCount.get(topic).get(language).get(type)/100) + " "); 
+    				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language]);
+    				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+    			}
+    		}
+    		int[][] typeTopicCounts = languageTypeTopicCounts[global_language];
+			double beta = betas[global_language];
+			for (int type = 0; type < vocabularySizes[global_language]; type++) {
+				out_global.print((averageLanguageTopicWordCount.get(topic).get(global_language).get(type)/100) + " "); 
+				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language]);
+				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+			}
+    		out.print("\n");
+    		out_global.print("\n");
+    	}
+    }
+
+    public void calculateWordProbs () {
+    	List<List<List<Float>>> languageTopicWordCount = new ArrayList<List<List<Float>>>();
+    	float [][] languageTopicTotalWords = new float[numTopics][numLanguages];
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		List<List<Float>> newArr = new ArrayList<List<Float>>();
+    		for (int language = 0; language < numLanguages; language++) {
+    			List<Float> innerNewArr = new ArrayList<Float>();
+    			for (int i = 0; i < vocabularySizes[language]; i++) {
+    				innerNewArr.add((float)0);
+    			}
+    			newArr.add(innerNewArr);
+    			// System.out.print("vocabilarysize: "+vocabularySizes[language]);	
+    			// System.out.println(" innerArr size: "+innerNewArr.size());	
+    		}   		
+    		languageTopicWordCount.add(newArr);
+    		// System.out.println("outerArr size: "+newArr.size());	
+    	}
+
+    	//// Compute word probabilities for each topic in each language ////
+    	for (int language = 0; language < numLanguages; language++) {
+    		int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    		double beta = betas[language];
+    		// System.out.println("beta: "+beta);
+    		for (int type = 0; type < vocabularySizes[language]; type++) {
+    			int[] topicCounts = typeTopicCounts[type];
+				
+				int index = 0;
+				while (index < topicCounts.length &&
+					   topicCounts[index] > 0) {
+					
+					int topic = topicCounts[index] & topicMask;
+					int count = topicCounts[index] >> topicBits;
+					// System.out.println("topic: "+topic+" count: "+count+" type: "+type);				
+					// ((languageTopicWordCount.get(topic)).get(language)).set(type) = (float)count/vocabularySizes[language]+beta;
+					// System.out.println((float)count/vocabularySizes[language]+(float)beta);
+					((languageTopicWordCount.get(topic)).get(language)).set(type,(float)count);
+					// System.out.println(((languageTopicWordCount.get(topic)).get(language)).get(type));
+
+					index++;
+				}
+    		}
+    	}
+
+    	//// Compute the total (smoothed) word count for each topic in each language////
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			float totalWordCount = 0;
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				// System.out.println("word count in a topic: "+languageTopicWordCount.get(topic).get(language).get(type)+" beta: "+beta+ " addWordCount: "+(languageTopicWordCount.get(topic).get(language).get(type)+beta));
+    				totalWordCount+=(languageTopicWordCount.get(topic).get(language).get(type)+beta); 	
+    				// System.out.println("totalwordcount: "+totalWordCount);		
+    			}
+    			languageTopicTotalWords[topic][language] = totalWordCount;
+    			// System.out.println("languageTopicTotalWords: "+languageTopicTotalWords[topic][language]);
+    		}
+    	}
+
+    	for (int topic = 0; topic < numTopics; topic++) {
+    		for (int language = 0; language < numLanguages; language++) {
+    			int[][] typeTopicCounts = languageTypeTopicCounts[language];
+    			double beta = betas[language];
+    			for (int type = 0; type < vocabularySizes[language]; type++) {
+    				float prev_val = averageLanguageTopicWordCount.get(topic).get(language).get(type);
+ 					averageLanguageTopicWordCount.get(topic).get(language).set(type, prev_val+((float)(languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language])); 
+    				// System.out.println("typecount"+(languageTopicWordCount.get(topic).get(language).get(type)+beta)+" beta:"+beta+" totaltypecount: "+languageTopicTotalWords[topic][language]);
+    				// System.out.println((languageTopicWordCount.get(topic).get(language).get(type)+beta)/languageTopicTotalWords[topic][language]);				
+    			}
+    		}
+    	}
+    }
+
+
 	public void printDocumentTopics (File f) throws IOException {
 		printDocumentTopics (new PrintWriter (f, "UTF-8") );
 	}
@@ -1156,7 +1654,7 @@ public class PolylingualTopicModel implements Serializable {
 				
 			// And normalize
 			for (int topic = 0; topic < numTopics; topic++) {
-				sortedTopics[topic].set(topic, (float) topicCounts[topic] / totalLength);
+				sortedTopics[topic].set(topic, ((float) topicCounts[topic]+alpha[topic]) / (totalLength+numTopics*alpha[topic]));
 			}
 			
 			Arrays.sort(sortedTopics);
@@ -1169,6 +1667,107 @@ public class PolylingualTopicModel implements Serializable {
 			}
 			pw.print (" \n");
 
+			Arrays.fill(topicCounts, 0);
+		}
+		
+	}
+
+	public void printAverageDocumentTopics (File f) throws IOException {
+		printAverageDocumentTopics (new PrintWriter (f, "UTF-8") );
+	}
+
+	public void printAverageDocumentTopics (PrintWriter pw)	{
+		pw.print ("#doc source topic proportion ...\n");
+		double threshold = 0.0;
+		int max = -1;
+		int docLength;
+		int[] topicCounts = new int[ numTopics ];
+
+		IDSorter[] sortedTopics = new IDSorter[ numTopics ];
+		for (int topic = 0; topic < numTopics; topic++) {
+			// Initialize the sorters with dummy values
+			sortedTopics[topic] = new IDSorter(topic, topic);
+		}
+
+		if (max < 0 || max > numTopics) {
+			max = numTopics;
+		}
+
+		for (int di = 0; di < data.size(); di++) {
+
+			pw.print (di); pw.print (' ');
+
+			int totalLength = 0;
+
+			for (int language = 0; language < numLanguages; language++) {
+			
+				LabelSequence topicSequence = (LabelSequence) data.get(di).topicSequences[language];
+				int[] currentDocTopics = topicSequence.getFeatures();
+				
+				docLength = topicSequence.getLength();
+				totalLength += docLength;
+				
+				// Count up the tokens
+				for (int token=0; token < docLength; token++) {
+					topicCounts[ currentDocTopics[token] ]++;
+				}
+			}
+				
+			// And normalize
+			for (int topic = 0; topic < numTopics; topic++) {
+				sortedTopics[topic].set(topic, averageDocumentTopicCounts[di][topic]/100);
+			}
+
+			Arrays.sort(sortedTopics);
+
+			for (int i = 0; i < max; i++) {
+				if (sortedTopics[i].getWeight() < threshold) { break; }
+				
+				pw.print (sortedTopics[i].getID() + " " + 
+						  sortedTopics[i].getWeight() + " ");
+			}
+			pw.print (" \n");
+
+			Arrays.fill(topicCounts, 0);
+		}
+		
+	}
+
+	public void calculateDocumentTopics ()	{
+		double threshold = 0.0;
+		int max = -1;
+		int docLength;
+		int[] topicCounts = new int[ numTopics ];
+
+		if (max < 0 || max > numTopics) {
+			max = numTopics;
+		}
+
+		for (int di = 0; di < data.size(); di++) {
+
+
+			int totalLength = 0;
+
+			for (int language = 0; language < numLanguages; language++) {
+			
+				LabelSequence topicSequence = (LabelSequence) data.get(di).topicSequences[language];
+				int[] currentDocTopics = topicSequence.getFeatures();
+				
+				docLength = topicSequence.getLength();
+				totalLength += docLength;
+				
+				// Count up the tokens
+				for (int token=0; token < docLength; token++) {
+					topicCounts[ currentDocTopics[token] ]++;
+				}
+			}
+				
+			// And normalize
+			for (int topic = 0; topic < numTopics; topic++) {
+				// System.out.println(" topic"+topic+": "+averageDocumentTopicCounts[di][topic] + "add: "+((double) topicCounts[topic]+alpha[topic]) / (totalLength+numTopics*alpha[topic]));
+				// System.out.println(" topic"+topic+" topiccounts: "+ topicCounts[topic]+" alpha: "+alpha[topic]+" totallength: "+ totalLength + "numTopics: " + numTopics);
+				averageDocumentTopicCounts[di][topic] = averageDocumentTopicCounts[di][topic] + ((double) topicCounts[topic]+alpha[topic]) / (totalLength+numTopics*alpha[topic]);
+			}
 			Arrays.fill(topicCounts, 0);
 		}
 		
@@ -1509,7 +2108,7 @@ public class PolylingualTopicModel implements Serializable {
 				}
 			}
 			
-			topicModel = new PolylingualTopicModel (numTopicsOption.value, alphaOption.value);
+			topicModel = new PolylingualTopicModel (numTopicsOption.value, alphaOption.value, betaOption.value);
 			if (randomSeedOption.value != 0) {
 				topicModel.setRandomSeed(randomSeedOption.value);
 			}
@@ -1532,9 +2131,37 @@ public class PolylingualTopicModel implements Serializable {
 		}
 
 		topicModel.estimate();
+		topicModel.average_estimate();
 
 		if (topicKeysFile.value != null) {
 			topicModel.printTopWords(new File(topicKeysFile.value), topWordsOption.value, false);
+		}
+
+		if (averageTopicKeyProbsFile.value != null) {
+			//topicModel.printAverageWordProbs(new File(averageTopicKeyProbsFile.value), false);
+
+			if (averageTopicGlobalKeyProbsFile.value != null) {
+				topicModel.printAverageWordProbs(new File(averageTopicKeyProbsFile.value), new File(averageTopicGlobalKeyProbsFile.value), false);
+			} else {
+				topicModel.printAverageWordProbs(new File(averageTopicKeyProbsFile.value), null, false);
+			}
+		}
+
+		if (topicKeysFile.value != null) {
+			topicModel.printTopWords(new File(topicKeysFile.value), topWordsOption.value, false);
+		}
+
+		if (averageTopicKeysFile.value != null) {
+			topicModel.printAverageTopWords(new File(averageTopicKeysFile.value), topWordsOption.value, false);
+		}
+
+		if (topicKeyProbsFile.value != null) {
+			// System.out.println(topicKeyProbsFile.value);
+			if (topicGlobalKeyProbsFile.value != null) {
+				topicModel.printWordProbs(new File(topicKeyProbsFile.value), new File(topicGlobalKeyProbsFile.value), false);
+			} else {
+				topicModel.printWordProbs(new File(topicKeyProbsFile.value), null, false);
+			}	
 		}
 
 		if (stateFile.value != null) {
@@ -1546,7 +2173,12 @@ public class PolylingualTopicModel implements Serializable {
 			topicModel.printDocumentTopics(out, docTopicsThreshold.value, docTopicsMax.value);
 			out.close();
 		}
-
+		if (averageDocTopicsFile.value != null) {
+			PrintWriter out = new PrintWriter (new FileWriter ((new File(averageDocTopicsFile.value))));
+			topicModel.printAverageDocumentTopics(out);
+			out.close();
+		}
+		
 		if (inferencerFilename.value != null) {
 			try {
 				for (int language = 0; language < topicModel.numLanguages; language++) {
