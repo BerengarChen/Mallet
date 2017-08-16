@@ -3,7 +3,7 @@ Learning the Latent "Look"
 
 This code provides an implementation of the research paper:
 ```
-Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding 
+Learning the Latent "Look": Unsupervised Discovery of a Style-Coherent Embedding from Fashion Images
 Wei-Lin Hsiao, Kristen Grauman
 International Conference on Computer Vision (ICCV), 2017
 ```
@@ -27,7 +27,7 @@ If `ant` finishes with `"BUILD SUCCESSFUL"`, Mallet is now ready to use.
 ```
 docID language_name word_1 word_2 ...
 ```
-The documents for each language will be in its own file. The Nth document in language 1 is assumed to have the same topic distribution (though a different vocabulary) as the Nth document in language 2, and so on. An example corpus is here. If a language lacks Nth document, just leave if blank as
+The documents for each language will be in its own file. The Nth document in language 1 is assumed to have the same topic distribution (though a different vocabulary) as the Nth document in language 2, and so on. If a language lacks Nth document, just leave if blank as
 ```
 docID language_name 
 ```
