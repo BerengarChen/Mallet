@@ -27,7 +27,7 @@ If `ant` finishes with `"BUILD SUCCESSFUL"`, Mallet is now ready to use.
 ```
 docID language_name word_1 word_2 ...
 ```
-The documents for each language will be in its own file. The Nth document in language 1 is assumed to have the same topic distribution (though a different vocabulary) as the Nth document in language 2, and so on. If a language lacks Nth document, just leave if blank as
+The documents for each language will be in its own file. The Nth document in language 1 is assumed to have the same topic distribution (though a different vocabulary) as the Nth document in language 2, and so on. If a language lacks Nth document, just leave it blank as
 ```
 docID language_name 
 ```
